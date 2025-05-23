@@ -1,0 +1,225 @@
+/auth/login:
+  post:
+    summary: Inicia sesión un usuario y devuelve un token JWT.
+    tags:
+      - Auth
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - email
+              - password
+            properties:
+              email:
+                type: string
+                format: email
+                description: Email del usuario.
+                example: user@example.com
+              password:
+                type: string
+                format: password
+                description: Contraseña del usuario.
+                example: password123
+    responses:
+      200:
+        description: Inicio de sesión exitoso.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                success:
+                  type: boolean
+                  example: true
+                message:
+                  type: string
+                  example: User Logged In successfully
+                data:
+                  type: object
+                  properties:
+                    _id:
+                      type: string
+                      example: 60d5ec49f8a3c80015f8a3c8
+                    name:
+                      type: string
+                      example: John Doe
+                    email:
+                      type: string
+                      example: user@example.com
+                    role:
+                      type: string
+                      example: user
+                    isActive:
+                      type: boolean
+                      example: true
+                    token:
+                      type: string
+                      description: Token de autenticación JWT.
+                      example: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...
+      400:
+        description: Credenciales inválidas o campos requeridos faltantes.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                success:
+                  type: boolean
+                  example: false
+                message:
+                  type: string
+                  example: Invalid credentials (Email or password is not correct)
+      500:
+        description: Error interno del servidor.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                success:
+                  type: boolean
+                  example: false
+                message:
+                  type: string
+                  example: Internal Server Error
+
+/auth/forgot-password:
+  post:
+    summary: Solicita un restablecimiento de contraseña enviando un email al usuario.
+    tags:
+      - Auth
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - email
+            properties:
+              email:
+                type: string
+                format: email
+                description: Email del usuario para el restablecimiento de contraseña.
+                example: user@example.com
+    responses:
+      200:
+        description: Email de restablecimiento de contraseña enviado (si el email está registrado).
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                success:
+                  type: boolean
+                  example: true
+                message:
+                  type: string
+                  example: Password reset email sent (if email is registered)
+      400:
+        description: Email no proporcionado o formato inválido.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                success:
+                  type: boolean
+                  example: false
+                message:
+                  type: string
+                  example: Email is required to reset password
+      500:
+        description: Error interno del servidor o fallo en el envío del email.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                success:
+                  type: boolean
+                  example: false
+                message:
+                  type: string
+                  example: Internal Server Error
+
+/auth/reset-password/{token}:
+  put:
+    summary: Restablece la contraseña de un usuario usando un token de restablecimiento.
+    tags:
+      - Auth
+    parameters:
+      - in: path
+        name: token
+        schema:
+          type: string
+        required: true
+        description: Token de restablecimiento de contraseña recibido por email.
+        example: 87a6b5c4d3e2f1a0b9c8d7e6f5a4b3c2d1e0f9a8b7c6d5e4f3a2b1c0d9e8f7a6
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - newPassword
+            properties:
+              newPassword:
+                type: string
+                format: password
+                description: La nueva contraseña del usuario (mínimo 6 caracteres).
+                example: MyNewSecurePassword123
+    responses:
+      200:
+        description: Contraseña restablecida exitosamente.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                success:
+                  type: boolean
+                  example: true
+                message:
+                  type: string
+                  example: Password reset successful. You can now log in with your new password.
+                data:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                      example: John Doe
+                    email:
+                      type: string
+                      example: user@example.com
+      400:
+        description: Token inválido, expirado o nueva contraseña no proporcionada/inválida.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                success:
+                  type: boolean
+                  example: false
+                message:
+                  type: string
+                  example: Invalid or expired reset token.
+      500:
+        description: Error interno del servidor.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                success:
+                  type: boolean
+                  example: false
+                message:
+                  type: string
+                  example: Internal Server Error
+

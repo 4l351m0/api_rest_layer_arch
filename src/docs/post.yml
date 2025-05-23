@@ -1,0 +1,370 @@
+paths:
+  /posts:
+    post:
+      summary: Crea un nuevo post.
+      tags:
+        - Posts
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - title
+                - body
+              properties:
+                title:
+                  type: string
+                  description: Título del post.
+                  example: Mi Primer Post
+                body:
+                  type: string
+                  description: Contenido del post.
+                  example: Este es el cuerpo de mi primer post en el blog.
+      responses:
+        '201':
+          description: Post creado exitosamente.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Post was created successfully
+                  data:
+                    $ref: '#/components/schemas/Post'
+        '400':
+          description: Fallo de validación o datos inválidos.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: Validation failed for post creation
+        '401':
+          description: No autorizado (token JWT faltante o inválido).
+        '500':
+          description: Error interno del servidor.
+    get:
+      summary: Obtiene una lista de todos los posts.
+      tags:
+        - Posts
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+          description: Número de página para la paginación.
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 10
+          description: Número de elementos por página.
+        - in: query
+          name: sort
+          schema:
+            type: string
+            description: Campo por el que ordenar los resultados (ej. createdAt, -createdAt).
+            example: -createdAt
+        - in: query
+          name: title
+          schema:
+            type: string
+            description: Filtra posts por título (búsqueda parcial).
+            example: Mi Post
+        - in: query
+          name: author
+          schema:
+            type: string
+            description: Filtra posts por ID de autor.
+            example: 60d5ec49f8a3c80015f8a3c0
+      responses:
+        '200':
+          description: Lista de posts obtenida exitosamente.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Posts were fetched successfully
+                  count:
+                    type: integer
+                    description: Número de posts en la respuesta actual.
+                    example: 2
+                  total:
+                    type: integer
+                    description: Número total de posts.
+                    example: 5
+                  pagination:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                        example: 1
+                      limit:
+                        type: integer
+                        example: 10
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/Post'
+        '400':
+          description: Parámetros de consulta inválidos.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: Invalid query parameters
+        '401':
+          description: No autorizado (token JWT faltante o inválido).
+        '500':
+          description: Error interno del servidor.
+  /posts/{id}:
+    get:
+      summary: Obtiene un post por su ID.
+      tags:
+        - Posts
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: ID del post a obtener.
+          example: 60d5ec49f8a3c80015f8a3c8
+      responses:
+        '200':
+          description: Post obtenido exitosamente.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Get Post By Id successfully
+                  data:
+                    $ref: '#/components/schemas/Post'
+        '400':
+          description: ID de post con formato inválido.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: Invalid Post ID format
+        '401':
+          description: No autorizado (token JWT faltante o inválido).
+        '404':
+          description: Post no encontrado.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'Post not found with ID: 60d5ec49f8a3c80015f8a3c8'
+        '500':
+          description: Error interno del servidor.
+    put:
+      summary: Actualiza un post por su ID.
+      tags:
+        - Posts
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: ID del post a actualizar.
+          example: 60d5ec49f8a3c80015f8a3c8
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                title:
+                  type: string
+                  description: Nuevo título del post.
+                  example: Título del Post Actualizado
+                body:
+                  type: string
+                  description: Nuevo contenido del post.
+                  example: Este es el contenido actualizado de mi post.
+      responses:
+        '200':
+          description: Post actualizado exitosamente.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Post was updated successfully
+                  data:
+                    $ref: '#/components/schemas/Post'
+        '400':
+          description: Fallo de validación, datos inválidos o ID de post inválido.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: Validation Failed
+        '401':
+          description: No autorizado (token JWT faltante o inválido).
+        '403':
+          description: Prohibido (el usuario no es el autor del post y no es administrador).
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: Not authorized to update this post
+        '404':
+          description: Post no encontrado.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'Post not found with ID: 60d5ec49f8a3c80015f8a3c8'
+        '500':
+          description: Error interno del servidor.
+    delete:
+      summary: Elimina un post por su ID.
+      tags:
+        - Posts
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: ID del post a eliminar.
+          example: 60d5ec49f8a3c80015f8a3c8
+      responses:
+        '200':
+          description: Post eliminado exitosamente.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  message:
+                    type: string
+                    example: Post has been removed successfully
+                  data:
+                    $ref: '#/components/schemas/Post'
+        '400':
+          description: ID de post con formato inválido.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: Invalid Post ID format
+        '401':
+          description: No autorizado (token JWT faltante o inválido).
+        '403':
+          description: Prohibido (el usuario no es el autor del post y no es administrador).
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: Not authorized to delete this post
+        '404':
+          description: Post no encontrado.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: 'Post not found with ID: 60d5ec49f8a3c80015f8a3c8'
+        '500':
+          description: Error interno del servidor.

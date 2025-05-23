@@ -1,0 +1,160 @@
+/posts/{postId}/like:
+  post:
+    summary: Añade o quita un like a un post (toggle).
+    tags:
+      - Likes
+    security:
+      - bearerAuth: []
+    parameters:
+      - in: path
+        name: postId
+        schema:
+          type: string
+        required: true
+        description: ID del post al que se le dará o quitará el like.
+        example: 60d5ec49f8a3c80015f8a3c8
+    responses:
+      200:
+        description: Like añadido o quitado exitosamente.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                success:
+                  type: boolean
+                  example: true
+                message:
+                  type: string
+                  example: Like was added successfully
+                data:
+                  type: object
+                  properties:
+                    _id:
+                      type: string
+                      description: ID del Like creado/eliminado.
+                      example: 60d5ec49f8a3c80015f8a3c9
+                    user:
+                      type: string
+                      description: ID del usuario que dio/quitó el like.
+                      example: 60d5ec49f8a3c80015f8a3c0
+                    post:
+                      type: string
+                      description: ID del post asociado al like.
+                      example: 60d5ec49f8a3c80015f8a3c8
+                    createdAt:
+                      type: string
+                      format: date-time
+                    updatedAt:
+                      type: string
+                      format: date-time
+      400:
+        description: ID de post con formato inválido.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                success:
+                  type: boolean
+                  example: false
+                message:
+                  type: string
+                  example: Invalid Post ID format
+      401:
+        description: No autorizado (token JWT faltante o inválido).
+      404:
+        description: Post no encontrado.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                success:
+                  type: boolean
+                  example: false
+                message:
+                  type: string
+                  example: 'Post not found with ID: 60d5ec49f8a3c80015f8a3c8'
+      500:
+        description: Error interno del servidor.
+
+  delete:
+    summary: Elimina un like de un post.
+    tags:
+      - Likes
+    security:
+      - bearerAuth: []
+    parameters:
+      - in: path
+        name: postId
+        schema:
+          type: string
+        required: true
+        description: ID del post del que se eliminará el like.
+        example: 60d5ec49f8a3c80015f8a3c8
+    responses:
+      200:
+        description: Like eliminado exitosamente.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                success:
+                  type: boolean
+                  example: true
+                message:
+                  type: string
+                  example: Like was removed from post 60d5ec49f8a3c80015f8a3c8
+                data:
+                  type: object
+                  properties:
+                    _id:
+                      type: string
+                      description: ID del Like eliminado.
+                      example: 60d5ec49f8a3c80015f8a3c9
+                    user:
+                      type: string
+                      description: ID del usuario que eliminó el like.
+                      example: 60d5ec49f8a3c80015f8a3c0
+                    post:
+                      type: string
+                      description: ID del post asociado al like.
+                      example: 60d5ec49f8a3c80015f8a3c8
+                    createdAt:
+                      type: string
+                      format: date-time
+                    updatedAt:
+                      type: string
+                      format: date-time
+      400:
+        description: ID de post con formato inválido.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                success:
+                  type: boolean
+                  example: false
+                message:
+                  type: string
+                  example: Invalid Post ID format
+      401:
+        description: No autorizado (token JWT faltante o inválido).
+      404:
+        description: Post o like no encontrado.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                success:
+                  type: boolean
+                  example: false
+                message:
+                  type: string
+                  example: 'Like not found for user on post: 60d5ec49f8a3c80015f8a3c8'
+      500:
+        description: Error interno del servidor.

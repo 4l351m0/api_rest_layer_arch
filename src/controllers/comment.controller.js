@@ -41,6 +41,74 @@ export const create = async (req, res, next) => {
 	}
 }
 
+/**
+ * @swagger
+ * /posts/{postId}/comments/{commentId}:
+ *   get:
+ *     summary: Obtiene un comentario específico de un post.
+ *     tags: [Comments]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: postId
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: ID del post al que pertenece el comentario.
+ *         example: 60d5ec49f8a3c80015f8a3c8
+ *       - in: path
+ *         name: commentId
+ *         schema:
+ *           type: string
+ *         required: true
+ *         description: ID del comentario a obtener.
+ *         example: 60d5ec49f8a3c80015f8a3c9
+ *     responses:
+ *       200:
+ *         description: Comentario obtenido exitosamente.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: true
+ *                 data:
+ *                   $ref: '#/components/schemas/Comment'
+ *       400:
+ *         description: ID de post o comentario con formato inválido.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: Invalid ID format
+ *       401:
+ *         description: No autorizado (token JWT faltante o inválido).
+ *       404:
+ *         description: Post o comentario no encontrado.
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: object
+ *               properties:
+ *                 success:
+ *                   type: boolean
+ *                   example: false
+ *                 message:
+ *                   type: string
+ *                   example: Comment not found with ID: 60d5ec49f8a3c80015f8a3c9 for Post: 60d5ec49f8a3c80015f8a3c8
+ *       500:
+ *         description: Error interno del servidor.
+ */
+
 export const getById = async (req, res, next) => {
 	try {
 		const postId = req.params.postId;

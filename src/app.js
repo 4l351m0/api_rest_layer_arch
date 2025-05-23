@@ -1,6 +1,8 @@
 import cors from 'cors';
 import express from 'express';
+import swaggerUi from 'swagger-ui-express';
 import { logger } from './config/logger.js';
+import swaggerSpec from './docs/swagger.js';
 import { errorHandler } from './middlewares/error.middleware.js';
 import apiRoutes from './routes/api.routes.js';
 
@@ -15,6 +17,7 @@ app.use((req, res, next) => {
 	next();
 });
 
+app.use('/api-docs', swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 app.use('/api', apiRoutes);
 
 app.use((req, res, next) => {

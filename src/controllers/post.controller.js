@@ -57,8 +57,8 @@ export const getById = async (req, res, next) => {
 
 	} catch (error) {
 		logger.error(
-			`[Post Controller] Error fetching post with ID ${postId}: ${error.message}`,
-			{ stack: error.stack, postId }
+			`[Post Controller] Error fetching post with ID ${req.params.id}: ${error.message}`,
+			{ stack: error.stack, postId: req.params.id }
 		);
 		next(error);
 	}
@@ -70,6 +70,7 @@ export const update = async (req, res, next) => {
 		const errors = validationResult(req);
 		const payload = { ...req.body };
 		const userId = req.user._id;
+		const isAdmin = req.user.role === 'admin';
 
 		if(!errors.isEmpty) {
 			const error = new BadRequestError('[Post Controller] Validation Failed');
@@ -79,7 +80,7 @@ export const update = async (req, res, next) => {
 			return next(error);
 		}
 
-		const post = await postService.update(payload, postId, userId);
+		const post = await postService.update(payload, postId, userId, isAdmin);
 
 		res.status(200).json({
 			success: true,

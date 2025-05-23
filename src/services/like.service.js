@@ -30,7 +30,7 @@ class LikeService {
 			const like = new Like({ user, post });
 			like.save();
 
-			const postLikesUpdated = Post.findByIdAndUpdate(
+			const postLikesUpdated = await Post.findByIdAndUpdate(
 				post,
 				{ $inc: { likesCount: 1 } },
 				{ new : true}

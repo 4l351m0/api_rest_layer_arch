@@ -26,12 +26,16 @@ export const login = async (req, res, next) => {
 		);
 
 		res.status(200).json({
-			_id: userLoggedIn._id,
-			name: userLoggedIn.name,
-			email: userLoggedIn.email,
-			role: userLoggedIn.role,
-			isActive: userLoggedIn.isActive,
-			token
+			success: true,
+			message: 'User Logged In successfully',
+			data: {
+				_id: userLoggedIn._id,
+				name: userLoggedIn.name,
+				email: userLoggedIn.email,
+				role: userLoggedIn.role,
+				isActive: userLoggedIn.isActive,
+				token
+			}
 		});
 
 		logger.info(`[Auth Controller] User logged in successfully: ${userLoggedIn.email}`);

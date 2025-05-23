@@ -9,7 +9,7 @@ class CommentService {
 		try {
 			logger.info(`[Comment Service] Attempting to create new comment for post: ${postId}...`);
 
-			const post = Post.findById(postId).select('_id');
+			const post = await Post.findById(postId).select('_id');
 
 			if(!post) {
 				logger.warn(`[Comment Service] Post was not found with thid ID ${postId}`);
@@ -154,6 +154,13 @@ class CommentService {
 	getAllByPost = async (postId, options = {}) => {
 		try {
 			logger.info(`[Comment Service] Attempting to fetch comments for post: ${postId}...`);
+
+			const post = await Post.findById(postId);
+
+			if(!post) {
+				logger.warn(`[Comment Service] Post was not found with id ${postId}`);
+				throw new NotFoundError(`Post was not found with ID: ${postId}`);
+			}
 
 			const filters = { ...options.filter, post: postId };
 

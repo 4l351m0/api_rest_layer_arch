@@ -9,7 +9,8 @@ const router = express.Router();
 router.get('/status', (req, res) => {
 	logger.info(`🕥 API status check...`);
 	res.json({
-		status: 'OK',
+		success: true,
+		message: 'OK',
 		environment: process.env.NODE_ENV
 	});
 });

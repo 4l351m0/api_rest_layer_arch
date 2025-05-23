@@ -35,7 +35,6 @@ export const auth = async (req, res, next) => {
 			next(authError);
 		}
 	} else {
-		console.log('No exist token');
 		const error = new Error('Not authorized, no token provided');
 		error.status = 401;
 		next(error);

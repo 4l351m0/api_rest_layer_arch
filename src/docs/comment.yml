@@ -1,0 +1,402 @@
+/posts/{postId}/comments:
+  get:
+    summary: Obtiene todos los comentarios para un post específico.
+    tags:
+      - Comments
+    security:
+      - bearerAuth: []
+    parameters:
+      - in: path
+        name: postId
+        schema:
+          type: string
+        required: true
+        description: ID del post del que se obtendrán los comentarios.
+        example: 60d5ec49f8a3c80015f8a3c8
+      - in: query
+        name: page
+        schema:
+          type: integer
+          default: 1
+        description: Número de página para la paginación.
+      - in: query
+        name: limit
+        schema:
+          type: integer
+          default: 10
+        description: Número de elementos por página.
+      - in: query
+        name: sort
+        schema:
+          type: string
+        description: Campo por el que ordenar los resultados (ej. createdAt, -createdAt).
+        example: -createdAt
+    responses:
+      200:
+        description: Lista de comentarios obtenida exitosamente.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                success:
+                  type: boolean
+                  example: true
+                count:
+                  type: integer
+                  description: Número de comentarios en la respuesta actual.
+                  example: 2
+                total:
+                  type: integer
+                  description: Número total de comentarios para el post.
+                  example: 5
+                pagination:
+                  type: object
+                  properties:
+                    page:
+                      type: integer
+                      example: 1
+                    limit:
+                      type: integer
+                      example: 10
+                data:
+                  type: array
+                  items:
+                    $ref: '#/components/schemas/Comment'
+      400:
+        description: ID de post con formato inválido o parámetros de consulta inválidos.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                success:
+                  type: boolean
+                  example: false
+                message:
+                  type: string
+                  example: Invalid ID format
+      401:
+        description: No autorizado (token JWT faltante o inválido).
+      404:
+        description: Post no encontrado.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                success:
+                  type: boolean
+                  example: false
+                message:
+                  type: string
+                  example: 'Post not found with ID: 60d5ec49f8a3c80015f8a3c8'
+      500:
+        description: Error interno del servidor.
+  post:
+    summary: Crea un nuevo comentario en un post específico.
+    tags:
+      - Comments
+    security:
+      - bearerAuth: []
+    parameters:
+      - in: path
+        name: postId
+        schema:
+          type: string
+        required: true
+        description: ID del post al que se añadirá el comentario.
+        example: 60d5ec49f8a3c80015f8a3c8
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            required:
+              - text
+            properties:
+              text:
+                type: string
+                description: Contenido del comentario.
+                example: ¡Excelente post! Muy informativo.
+    responses:
+      201:
+        description: Comentario creado exitosamente.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                success:
+                  type: boolean
+                  example: true
+                message:
+                  type: string
+                  example: Comment was added for post 60d5ec49f8a3c80015f8a3c8
+                data:
+                  $ref: '#/components/schemas/Comment'
+      400:
+        description: Fallo de validación o ID de post inválido.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                success:
+                  type: boolean
+                  example: false
+                message:
+                  type: string
+                  example: Validation failed for comment creation
+      401:
+        description: No autorizado (token JWT faltante o inválido).
+      404:
+        description: Post no encontrado.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                success:
+                  type: boolean
+                  example: false
+                message:
+                  type: string
+                  example: 'Post not found with ID: 60d5ec49f8a3c80015f8a3c8'
+      500:
+        description: Error interno del servidor.
+
+/posts/{postId}/comments/{commentId}:
+  get:
+    summary: Obtiene un comentario específico de un post.
+    tags:
+      - Comments
+    security:
+      - bearerAuth: []
+    parameters:
+      - in: path
+        name: postId
+        schema:
+          type: string
+        required: true
+        description: ID del post al que pertenece el comentario.
+        example: 60d5ec49f8a3c80015f8a3c8
+      - in: path
+        name: commentId
+        schema:
+          type: string
+        required: true
+        description: ID del comentario a obtener.
+        example: 60d5ec49f8a3c80015f8a3c9
+    responses:
+      200:
+        description: Comentario obtenido exitosamente.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                success:
+                  type: boolean
+                  example: true
+                data:
+                  $ref: '#/components/schemas/Comment'
+      400:
+        description: ID de post o comentario con formato inválido.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                success:
+                  type: boolean
+                  example: false
+                message:
+                  type: string
+                  example: Invalid ID format
+      401:
+        description: No autorizado (token JWT faltante o inválido).
+      404:
+        description: Post o comentario no encontrado.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                success:
+                  type: boolean
+                  example: false
+                message:
+                  type: string
+                  example: 'Comment not found with ID: 60d5ec49f8a3c80015f8a3c9 for Post: 60d5ec49f8a3c80015f8a3c8'
+      500:
+        description: Error interno del servidor.
+  put:
+    summary: Actualiza un comentario específico de un post.
+    tags:
+      - Comments
+    security:
+      - bearerAuth: []
+    parameters:
+      - in: path
+        name: postId
+        schema:
+          type: string
+        required: true
+        description: ID del post al que pertenece el comentario.
+        example: 60d5ec49f8a3c80015f8a3c8
+      - in: path
+        name: commentId
+        schema:
+          type: string
+        required: true
+        description: ID del comentario a actualizar.
+        example: 60d5ec49f8a3c80015f8a3c9
+    requestBody:
+      required: true
+      content:
+        application/json:
+          schema:
+            type: object
+            properties:
+              text:
+                type: string
+                description: Nuevo contenido del comentario.
+                example: Contenido del comentario actualizado.
+    responses:
+      200:
+        description: Comentario actualizado exitosamente.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                success:
+                  type: boolean
+                  example: true
+                data:
+                  $ref: '#/components/schemas/Comment'
+      400:
+        description: Fallo de validación o ID de post/comentario inválido.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                success:
+                  type: boolean
+                  example: false
+                message:
+                  type: string
+                  example: Validation Failed
+      401:
+        description: No autorizado (token JWT faltante o inválido).
+      403:
+        description: Prohibido (el usuario no es el autor del comentario).
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                success:
+                  type: boolean
+                  example: false
+                message:
+                  type: string
+                  example: User not authorized to update this comment
+      404:
+        description: Post o comentario no encontrado.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                success:
+                  type: boolean
+                  example: false
+                message:
+                  type: string
+                  example: 'Comment not found with ID: 60d5ec49f8a3c80015f8a3c9'
+      500:
+        description: Error interno del servidor.
+  delete:
+    summary: Elimina un comentario específico de un post.
+    tags:
+      - Comments
+    security:
+      - bearerAuth: []
+    parameters:
+      - in: path
+        name: postId
+        schema:
+          type: string
+        required: true
+        description: ID del post al que pertenece el comentario.
+        example: 60d5ec49f8a3c80015f8a3c8
+      - in: path
+        name: commentId
+        schema:
+          type: string
+        required: true
+        description: ID del comentario a eliminar.
+        example: 60d5ec49f8a3c80015f8a3c9
+    responses:
+      200:
+        description: Comentario eliminado exitosamente.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                success:
+                  type: boolean
+                  example: true
+                message:
+                  type: string
+                  example: Comment was removed successfully
+                data:
+                  $ref: '#/components/schemas/Comment'
+      400:
+        description: ID de post o comentario con formato inválido.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                success:
+                  type: boolean
+                  example: false
+                message:
+                  type: string
+                  example: Invalid ID format
+      401:
+        description: No autorizado (token JWT faltante o inválido).
+      403:
+        description: Prohibido (el usuario no es el autor del comentario).
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                success:
+                  type: boolean
+                  example: false
+                message:
+                  type: string
+                  example: User not authorized to delete this comment
+      404:
+        description: Post o comentario no encontrado.
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                success:
+                  type: boolean
+                  example: false
+                message:
+                  type: string
+                  example: 'Comment not found with ID: 60d5ec49f8a3c80015f8a3c9'
+      500:
+        description: Error interno del servidor.

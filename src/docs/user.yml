@@ -1,0 +1,191 @@
+paths:
+  /users:
+    post:
+      summary: Crea un nuevo usuario.
+      tags:
+        - Users
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              required:
+                - name
+                - email
+                - password
+              properties:
+                name:
+                  type: string
+                  description: Nombre del usuario.
+                  example: Jane Doe
+                email:
+                  type: string
+                  format: email
+                  description: Email del usuario (debe ser único).
+                  example: jane.doe@example.com
+                password:
+                  type: string
+                  format: password
+                  description: Contraseña del usuario (mínimo 6 caracteres).
+                  example: newpassword123
+                role:
+                  type: string
+                  enum: [user, admin]
+                  description: Rol del usuario (por defecto 'user').
+                  example: user
+      responses:
+        '201':
+          description: Usuario creado exitosamente.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  response:
+                    $ref: '#/components/schemas/User'
+        '400':
+          description: Datos de usuario inválidos o email ya registrado.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: Validation Failed or Email already registered
+        '500':
+          description: Error interno del servidor.
+    get:
+      summary: Obtiene una lista de todos los usuarios (solo para administradores).
+      tags:
+        - Users
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: query
+          name: page
+          schema:
+            type: integer
+            default: 1
+          description: Número de página para la paginación.
+        - in: query
+          name: limit
+          schema:
+            type: integer
+            default: 10
+          description: Número de elementos por página.
+        - in: query
+          name: sort
+          schema:
+            type: string
+            description: Campo por el que ordenar los resultados (ej. createdAt, -createdAt).
+            example: -createdAt
+        - in: query
+          name: name
+          schema:
+            type: string
+            description: Filtra usuarios por nombre (búsqueda parcial).
+            example: John
+        - in: query
+          name: email
+          schema:
+            type: string
+            description: Filtra usuarios por email (búsqueda parcial).
+            example: example.com
+        - in: query
+          name: role
+          schema:
+            type: string
+            enum: [user, admin]
+            description: Filtra usuarios por rol.
+            example: user
+      responses:
+        '200':
+          description: Lista de usuarios obtenida exitosamente.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: true
+                  count:
+                    type: integer
+                    description: Número de usuarios en la respuesta actual.
+                    example: 2
+                  total:
+                    type: integer
+                    description: Número total de usuarios.
+                    example: 5
+                  pagination:
+                    type: object
+                    properties:
+                      page:
+                        type: integer
+                        example: 1
+                      limit:
+                        type: integer
+                        example: 10
+                  data:
+                    type: array
+                    items:
+                      $ref: '#/components/schemas/User'
+        '400':
+          description: Parámetros de consulta inválidos.
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: Invalid query parameters
+        '401':
+          description: No autorizado (token JWT faltante o inválido).
+        '403':
+          description: Prohibido (el usuario no tiene rol de administrador).
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  success:
+                    type: boolean
+                    example: false
+                  message:
+                    type: string
+                    example: Not authorized to perform this action (Admin role required)
+        '500':
+          description: Error interno del servidor.
+  /users/{id}:
+    get:
+      summary: Obtiene un usuario por su ID.
+      tags:
+        - Users
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: id
+          schema:
+            type: string
+          required: true
+          description: ID del usuario a obtener.
+          example: 60d5ec49f8a3c80015f8a3c8
+      responses:
+        '200':
+          description: Usuario obtenido exitosamente.
+          content:
+            application/json:
+              schema:

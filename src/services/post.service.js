@@ -48,6 +48,7 @@ class PostService {
 	}
 
 	getById = async(postId) => {
+		logger.info(postId);
 		try {
 			logger.info(`[Post Service] Attempting to get post by ID: ${postId}...`);
 
@@ -73,14 +74,14 @@ class PostService {
 			}
 
 			if(error.kind === 'ObjectId') {
-				throw NotFoundError(`[Post Service] Post not found with ID: ${postId}`);
+				throw new BadRequestError(`[Post Service] Invalid ID format: ${postId}`);
 			}
 
 			throw error;
 		}
 	}
 
-	update = async(postData, postId, userId) => {
+	update = async(postData, postId, userId, isAdmin) => {
 		try {
 			logger.info(`[Post Service] Attemting to update post with ID: ${postId}`);
 
@@ -93,7 +94,7 @@ class PostService {
 
 			const isAuthor = post.author && post.author.equals(userId);
 
-			if(!isAuthor) {
+			if(!isAuthor && !isAdmin) {
 				logger.warn(`[Post Service] User with ID: ${userId} is not authorized to update this resource`);
 				throw new ForbiddenError(`[Post Service] User not allowed to update this resource`);
 			}
@@ -133,7 +134,7 @@ class PostService {
 			}
 
 			if(error.kind === 'ObjectId') {
-				throw new NotFoundError(`[Post Service] Post was not found with ID: ${postId}`);
+				throw new BadRequestError(`[Post Service] Post was not found with ID: ${postId}`);
 			}
 
 			throw error;
@@ -176,7 +177,7 @@ class PostService {
 			}
 
 			if(error.kind === 'ObjectId') {
-				throw new NotFoundError(`[Post Service] Post was not found and cannot be removed with ID: ${postId}`);
+				throw new BadRequestError(`[Post Service] Invalid format ID: ${postId}`);
 			}
 
 			throw error;
