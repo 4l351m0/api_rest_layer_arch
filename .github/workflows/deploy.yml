@@ -24,7 +24,7 @@ jobs:
         working-directory: ./
 
       - name: Push Docker Image to Docker Hub
-        run: docker push ${{ secrest.DOCKERHUB_USERNAME }}/mi-api-rest-node:latest
+        run: docker push ${{ secrets.DOCKERHUB_USERNAME }}/mi-api-rest-node:latest
 
       - name: Deploy to EC2
         uses: appleboy/ssh-action@master
